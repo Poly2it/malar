@@ -3,8 +3,8 @@ import asyncio
 
 
 async def main():
-    price = await Api.Pricing.current(Sector.SE1)
-    print(f"The energy price in öre/kWh for sector SE1 is {price[2]}")
+    _, _, price = await Api.Pricing.current(Sector.SE1)
+    print(f"The energy price in öre/kWh for sector SE1 is {price}")
 
 
 if __name__ == "__main__":
