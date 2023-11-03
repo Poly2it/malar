@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 
 
 class Sector(Enum):
@@ -7,5 +7,15 @@ class Sector(Enum):
     SE3 = 3
     SE4 = 4
 
-    def __str__(self) -> str:
-        return self.name
+
+class Service(Enum):
+    WATER = auto()
+    DISTRICT_HEATING = auto()
+    ELECTRICITY = auto()
+
+
+class Status(Enum):
+    NOMINAL = auto()
+    UNDER_INVESTIGATION = auto()
+    UNDER_SERVICE = auto()
+
