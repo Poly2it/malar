@@ -16,7 +16,7 @@ class Types:
             interval: str
             startDateTime: str
             endDateTime:   str
-            price: int
+            price: float
 
         class Historical(TypedDict):
             version: str
@@ -86,7 +86,7 @@ class Api:
                 async with client:
                     response = await client.get(HOST)
 
-                soup = BeautifulSoup(response.text, features="html.parser")
+                soup: BeautifulSoup = BeautifulSoup(response.text, features="html.parser")
                 comments = soup.find_all(string=lambda text: isinstance(text, Comment))
                 for comment in comments:
                     comment.extract()
@@ -122,7 +122,9 @@ class Api:
                 for destructable in destructables:
                     destructable.decompose()
 
-                meta_tag = soup.new_tag("meta", charset="utf-8")
+                # BS4 did not properly set member tags for the new_tag function, as such
+                # we need to ignore typing on this line
+                meta_tag: Tag = soup.new_tag(name="meta", charset="utf-8")             # pyright: ignore[reportUnknownMemberType]
                 html.insert(0, meta_tag)
 
                 return soup
@@ -148,7 +150,7 @@ class Api:
                 Tuple[
                     datetime: start time
                     datetime: end time
-                    int:      price
+                    float:    price
                 ]
             """
             TIMEZONE = ZoneInfo("Europe/Stockholm")
@@ -180,7 +182,7 @@ class Api:
             *,
             cache: Union[None, Types.Json.Historical] = None,
             client: httpx.AsyncClient = httpx.AsyncClient(),
-        ) -> List[Tuple[datetime, datetime, int]]:
+        ) -> List[Tuple[datetime, datetime, float]]:
             """
             Returns recent pricing information in öre/kWh.
 
@@ -197,7 +199,7 @@ class Api:
                     Tuple[
                         datetime: start time
                         datetime: end time
-                        int:      price
+                        float:    price
                     ]
                 ]
             """
@@ -208,7 +210,7 @@ class Api:
             else:
                 response = cache
             
-            intervals = []
+            intervals: List[Tuple[datetime, datetime, float]] = []
             for interval in response["intervals"]:
                 interval_start = datetime.fromisoformat(
                     interval["startDateTime"]
@@ -216,13 +218,13 @@ class Api:
                 interval_end   = datetime.fromisoformat(
                     interval["endDateTime"]
                 ).replace(tzinfo=TIMEZONE)
-                interval_value = int(interval["price"])
+                interval_value = interval["price"]
 
                 if (
                     interval_start.timestamp() >= start.timestamp() and \
                     interval_end.timestamp()   <= end.timestamp()
                 ):
-                    intervals.append([interval_start, interval_end, interval_value])
+                    intervals.append((interval_start, interval_end, interval_value))
 
             return intervals
     
@@ -232,7 +234,7 @@ class Api:
             *,
             cache: Union[None, BeautifulSoup] = None,
             client: httpx.AsyncClient = httpx.AsyncClient(),
-        ) -> List[Tuple[List[str], Service, datetime, datetime, Status, int]]:
+        ) -> List[Tuple[List[str], Service, datetime, Union[None, datetime], Status, int]]:
             """
             Returns a list of current outages and data about them. Relies on parsing the
             website and may as such break on some types of website updates.
@@ -244,12 +246,12 @@ class Api:
             Returns:
                 List[
                     Tuple[
-                        List[str]: names of the affected locations
-                        Service:   affected service
-                        datetime:  start time
-                        datetime:  end time
-                        Status:    status of the outage
-                        int:       number of affected customers
+                        List[str]:             names of the affected locations
+                        Service:               affected service
+                        datetime:              start time
+                        Union[None, datetime]: end time if known
+                        Status:                status of the outage
+                        int:                   number of affected customers
                     ]
                 ]
             """
@@ -263,7 +265,7 @@ class Api:
             assert isinstance(current, Tag)
             current.extract()
 
-            outages = []
+            outages: List[Tuple[List[str], Service, datetime, Union[None, datetime], Status, int]] = []
             
             for outage in current.find_all(class_="outageinfo__list-item"):
                 SERVICE_ALIAS = {
