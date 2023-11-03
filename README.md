@@ -26,6 +26,8 @@ The energy price in öre/kWh for sector SE1 is 41.97
 
 ---
 
+<img src="docs/lgpl.svg" alt="drawing" width="200" align="right"/>
+
 This project and its contributors are in no way assoicated with Mälarenergi AB or any of
 their associates. Their name is used in this project for attribution and illustrative
 purposes, such as clearly displaying the origin of the data available with this API 
