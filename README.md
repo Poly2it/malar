@@ -1,6 +1,6 @@
 # Malar
 Malar is an asynchronous wrapper for the Mälarenergi API. It can be used for reading
-energy pricing in different energy sectors in Sweden.
+energy pricing data in different energy sectors in Sweden.
 
 ## Usage
 `./install`

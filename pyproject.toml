@@ -4,7 +4,7 @@ version = "0.0.1"
 description = "A wrapper for the Malardalen API"
 license = { file = "LICENSE" }
 authors = [{ name = "Poly2it" }]
-dependencies = ["httpx"]
+dependencies = ["httpx", "beautifulsoup4"]
 requires-python = ">=3.11"
 
 [tool.setuptools]
