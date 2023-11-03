@@ -269,6 +269,7 @@ class Api:
                 SERVICE_ALIAS = {
                     "Vatten": Service.WATER,
                     "Fjärrvärme": Service.DISTRICT_HEATING,
+                    "Strömavbrott": Service.ELECTRICITY,
                 }
                 STATUS_ALIAS = {
                     "Felsökning pågår": Status.UNDER_INVESTIGATION,
@@ -290,12 +291,19 @@ class Api:
                 service: Service = SERVICE_ALIAS[outage.find(
                     class_="outageinfo__list-item--header2"
                 ).text]
+
                 start_time: datetime = datetime.strptime(
                     start_time_string, "%y-%m-%d %H:%M"
                 ).replace(tzinfo=TIMEZONE)
-                end_time: datetime   = datetime.strptime(
-                    end_time_string,   "%y-%m-%d %H:%M"
-                ).replace(tzinfo=TIMEZONE)
+
+                end_time: Union[None, datetime] = None
+                if end_time_string == "Kan ej bedömas för tillfället":
+                    end_time = None
+                else:
+                    end_time = datetime.strptime(
+                        end_time_string,   "%y-%m-%d %H:%M"
+                    ).replace(tzinfo=TIMEZONE)
+
                 status: Status = STATUS_ALIAS[status_string]
                 affected_customers: int = int(affected_customers_string)
 
