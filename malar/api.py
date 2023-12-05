@@ -276,6 +276,7 @@ class Api:
                 STATUS_ALIAS = {
                     "Felsökning pågår": Status.UNDER_INVESTIGATION,
                     "Underhåll": Status.UNDER_SERVICE,
+                    "Reparation pågår": Status.REPARATION_ONGOING,
                 }
                 TIMEZONE = ZoneInfo("Europe/Stockholm")
 

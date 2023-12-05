@@ -20,6 +20,7 @@ STATUS_STRING = {
     Status.NOMINAL: "The situation is resolved.",
     Status.UNDER_INVESTIGATION: "The situation is under investigation.",
     Status.UNDER_SERVICE: "The affected service is under service.",
+    Status.REPARATION_ONGOING: "The affected system is under repair.",
 }
 
 
@@ -111,7 +112,10 @@ async def main() -> None:
         locations, service, start, end, status, customers = outage
         parts = []
         parts.append(SERVICE_STRING[service])
-        parts.append(" interruption is affecting ")
+        if end is None:
+            parts.append(" interruption has been affecting ")
+        else:
+            parts.append(" interruption is affecting ")
         parts.append(natural_quantity(customers))
         if customers > 1:
             parts.append(" customers")
@@ -119,15 +123,15 @@ async def main() -> None:
             parts.append(" customer")
         parts.append(" in ")
         parts.append(natural_join(locations))
-        if end is not None:
+        if end is None:
+            parts.append(" since ")
+            parts.append(natural_timestring(start))
+        else:
             start_string, end_string = natural_timedelta(start, end)
             parts.append(" since ")
             parts.append(start_string)
             parts.append(" and is estimated to end ")
             parts.append(end_string)
-        else:
-            parts.append(" since ")
-            parts.append(natural_timestring(start))
         parts.append(". ")
         parts.append(STATUS_STRING[status])
 

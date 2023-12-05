@@ -18,4 +18,5 @@ class Status(Enum):
     NOMINAL = auto()
     UNDER_INVESTIGATION = auto()
     UNDER_SERVICE = auto()
+    REPARATION_ONGOING = auto()
 
